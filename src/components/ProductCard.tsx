@@ -1,8 +1,15 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Button,
+  Chip,
+  Box,
+  Rating,
+  IconButton,
+} from '@mui/material';
+import { ShoppingCart, FavoriteOutlined } from '@mui/icons-material';
 
 interface ProductCardProps {
   name: string;
@@ -33,91 +40,154 @@ const ProductCard = ({
       currency: "BRL",
     }).format(value);
 
-  const colorClasses = {
-    blue: "bg-iphone-blue",
-    purple: "bg-iphone-purple",
-    pink: "bg-iphone-pink",
-    green: "bg-iphone-green",
-    yellow: "bg-iphone-yellow",
-    red: "bg-iphone-red",
-    black: "bg-iphone-black",
-    white: "bg-iphone-white border",
+  const colorMap = {
+    blue: '#007AFF',
+    purple: '#AF52DE',
+    pink: '#FF2D92',
+    green: '#30D158',
+    yellow: '#FFD60A',
+    red: '#FF453A',
+    black: '#1D1D1F',
+    white: '#F2F2F7',
+  };
+
+  const colorNames = {
+    blue: 'Azul',
+    purple: 'Roxo',
+    pink: 'Rosa',
+    green: 'Verde',
+    yellow: 'Amarelo',
+    red: 'Vermelho',
+    black: 'Preto',
+    white: 'Branco',
   };
 
   return (
-    <Card className="group overflow-hidden bg-gradient-card shadow-card hover:shadow-elegant transition-smooth border-border/50 hover:border-primary/20">
-      <CardContent className="p-6">
-        <div className="aspect-square bg-gradient-secondary rounded-lg mb-4 relative overflow-hidden">
-          <img
-            src={image}
-            alt={`${name} ${model}`}
-            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-bounce"
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'visible',
+      }}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          aspectRatio: '1',
+          background: 'linear-gradient(135deg, #2C2C2E, #3A3A3C)',
+          borderRadius: 2,
+          m: 2,
+          mb: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        <img
+          src={image}
+          alt={`${name} ${model}`}
+          style={{
+            width: '80%',
+            height: '80%',
+            objectFit: 'contain',
+            transition: 'transform 0.3s ease',
+          }}
+        />
+        <Chip
+          label={storage}
+          size="small"
+          sx={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            backgroundColor: 'rgba(0, 122, 255, 0.9)',
+            color: 'white',
+            fontWeight: 600,
+          }}
+        />
+        <IconButton
+          sx={{
+            position: 'absolute',
+            top: 12,
+            left: 12,
+            backgroundColor: 'rgba(28, 28, 30, 0.8)',
+            color: 'white',
+            backdropFilter: 'blur(10px)',
+            '&:hover': {
+              backgroundColor: 'rgba(28, 28, 30, 0.9)',
+              color: '#FF453A',
+            },
+          }}
+          size="small"
+        >
+          <FavoriteOutlined fontSize="small" />
+        </IconButton>
+      </Box>
+
+      <CardContent sx={{ flexGrow: 1, pt: 0 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+          {name}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {model}
+        </Typography>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              backgroundColor: colorMap[color],
+              border: color === 'white' ? '1px solid #38383A' : 'none',
+            }}
           />
-          <Badge
-            variant="secondary"
-            className="absolute top-2 right-2 bg-background/90 backdrop-blur-sm"
-          >
-            {storage}
-          </Badge>
-        </div>
+          <Typography variant="caption" color="text.secondary">
+            {colorNames[color]}
+          </Typography>
+        </Box>
 
-        <div className="space-y-3">
-          <div>
-            <h3 className="font-semibold text-foreground">{name}</h3>
-            <p className="text-sm text-muted-foreground">{model}</p>
-          </div>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Rating value={rating} precision={0.1} readOnly size="small" />
+          <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+            ({rating})
+          </Typography>
+        </Box>
 
-          <div className="flex items-center space-x-2">
-            <div
-              className={cn(
-                "w-4 h-4 rounded-full",
-                colorClasses[color]
-              )}
-            />
-            <span className="text-sm text-muted-foreground capitalize">
-              {color === "black" ? "Preto" : color === "white" ? "Branco" : color}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={cn(
-                  "h-4 w-4",
-                  i < Math.floor(rating)
-                    ? "text-yellow-400 fill-current"
-                    : "text-muted-foreground"
-                )}
-              />
-            ))}
-            <span className="text-sm text-muted-foreground ml-1">
-              ({rating})
-            </span>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-foreground">
-                {formatPrice(price)}
-              </span>
-              {originalPrice && (
-                <span className="text-sm text-muted-foreground line-through">
-                  {formatPrice(originalPrice)}
-                </span>
-              )}
-            </div>
-
-            <Button
-              onClick={onAddToCart}
-              className="w-full bg-gradient-primary hover:shadow-glow transition-smooth group"
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main' }}>
+            {formatPrice(price)}
+          </Typography>
+          {originalPrice && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textDecoration: 'line-through' }}
             >
-              <ShoppingCart className="h-4 w-4 mr-2 group-hover:scale-110 transition-bounce" />
-              Adicionar ao Carrinho
-            </Button>
-          </div>
-        </div>
+              {formatPrice(originalPrice)}
+            </Typography>
+          )}
+        </Box>
       </CardContent>
+
+      <CardActions sx={{ p: 2, pt: 0 }}>
+        <Button
+          variant="contained"
+          fullWidth
+          startIcon={<ShoppingCart />}
+          onClick={onAddToCart}
+          sx={{
+            borderRadius: 2,
+            py: 1.5,
+            fontWeight: 600,
+          }}
+        >
+          Adicionar ao Carrinho
+        </Button>
+      </CardActions>
     </Card>
   );
 };

@@ -1,4 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Box,
+  Chip,
+} from '@mui/material';
+import {
+  TrendingUp,
+  AttachMoney,
+  ShoppingBag,
+  People,
+} from '@mui/icons-material';
 import {
   LineChart,
   Line,
@@ -15,9 +28,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from "recharts";
-import { TrendingUp, DollarSign, ShoppingBag, Users } from "lucide-react";
-import Navigation from "@/components/Navigation";
+} from 'recharts';
+import Navigation from '@/components/Navigation';
 
 const Dashboard = () => {
   // Dados mock para os gráficos
@@ -31,11 +43,11 @@ const Dashboard = () => {
   ];
 
   const modelData = [
-    { model: "iPhone 15 Pro", vendas: 45, cor: "hsl(213 93% 52%)" },
-    { model: "iPhone 15", vendas: 38, cor: "hsl(273 75% 66%)" },
-    { model: "iPhone 14", vendas: 32, cor: "hsl(142 76% 36%)" },
-    { model: "iPhone 14 Pro", vendas: 28, cor: "hsl(48 89% 60%)" },
-    { model: "iPhone SE", vendas: 15, cor: "hsl(5 78% 57%)" },
+    { model: "iPhone 15 Pro", vendas: 45, cor: "#007AFF" },
+    { model: "iPhone 15", vendas: 38, cor: "#AF52DE" },
+    { model: "iPhone 14", vendas: 32, cor: "#30D158" },
+    { model: "iPhone 14 Pro", vendas: 28, cor: "#FFD60A" },
+    { model: "iPhone SE", vendas: 15, cor: "#FF453A" },
   ];
 
   const revenueData = [
@@ -53,29 +65,29 @@ const Dashboard = () => {
       title: "Faturamento Total",
       value: "R$ 1.317.000",
       change: "+12.5%",
-      icon: DollarSign,
-      color: "text-green-600",
+      icon: AttachMoney,
+      color: "#30D158",
     },
     {
-      title: "Vendas Totais",
+      title: "Vendas Totais", 
       value: "328",
       change: "+8.3%",
       icon: ShoppingBag,
-      color: "text-blue-600",
+      color: "#007AFF",
     },
     {
       title: "Clientes Ativos",
       value: "1.234",
       change: "+15.2%",
-      icon: Users,
-      color: "text-purple-600",
+      icon: People,
+      color: "#AF52DE",
     },
     {
       title: "Ticket Médio",
       value: "R$ 4.014",
       change: "+3.8%",
       icon: TrendingUp,
-      color: "text-orange-600",
+      color: "#FF9F0A",
     },
   ];
 
@@ -87,62 +99,88 @@ const Dashboard = () => {
     }).format(value);
 
   return (
-    <div className="min-h-screen bg-background">
+    <Box sx={{ backgroundColor: 'background.default', minHeight: '100vh' }}>
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard de Vendas</h1>
-            <p className="text-muted-foreground mt-1">
-              Acompanhe o desempenho das suas vendas de iPhone
-            </p>
-          </div>
-        </div>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+            Dashboard de Vendas
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Acompanhe o desempenho das suas vendas de iPhone em tempo real
+          </Typography>
+        </Box>
 
         {/* KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 4 }}>
           {kpis.map((kpi) => (
-            <Card key={kpi.title} className="bg-gradient-card shadow-card border-border/50">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{kpi.title}</p>
-                    <p className="text-2xl font-bold text-foreground">{kpi.value}</p>
-                    <p className={`text-sm ${kpi.color}`}>{kpi.change}</p>
-                  </div>
-                  <kpi.icon className="h-8 w-8 text-primary" />
-                </div>
+            <Card key={kpi.title}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      {kpi.title}
+                    </Typography>
+                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                      {kpi.value}
+                    </Typography>
+                    <Chip
+                      label={kpi.change}
+                      size="small"
+                      sx={{
+                        backgroundColor: kpi.color,
+                        color: 'white',
+                        fontWeight: 600,
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 2,
+                      backgroundColor: `${kpi.color}20`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <kpi.icon sx={{ fontSize: 28, color: kpi.color }} />
+                  </Box>
+                </Box>
               </CardContent>
             </Card>
           ))}
-        </div>
+        </Box>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', gap: 3 }}>
           {/* Gráfico de Vendas Mensais */}
-          <Card className="bg-gradient-card shadow-card border-border/50">
-            <CardHeader>
-              <CardTitle>Vendas Mensais</CardTitle>
-            </CardHeader>
+          <Card sx={{ height: 400 }}>
             <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Vendas Mensais
+              </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={salesData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#38383A" />
+                  <XAxis dataKey="month" stroke="#8E8E93" />
+                  <YAxis stroke="#8E8E93" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      backgroundColor: "#1C1C1E",
+                      border: "1px solid #38383A",
+                      borderRadius: "12px",
+                      color: "#FFFFFF",
                     }}
                   />
                   <Line
                     type="monotone"
                     dataKey="vendas"
-                    stroke="hsl(var(--primary))"
+                    stroke="#007AFF"
                     strokeWidth={3}
-                    dot={{ fill: "hsl(var(--primary))" }}
+                    dot={{ fill: "#007AFF", strokeWidth: 2, r: 6 }}
+                    activeDot={{ r: 8, stroke: "#007AFF", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -150,34 +188,36 @@ const Dashboard = () => {
           </Card>
 
           {/* Gráfico de Faturamento */}
-          <Card className="bg-gradient-card shadow-card border-border/50">
-            <CardHeader>
-              <CardTitle>Faturamento Semanal</CardTitle>
-            </CardHeader>
+          <Card sx={{ height: 400 }}>
             <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Faturamento Semanal
+              </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={revenueData}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#007AFF" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#007AFF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#38383A" />
+                  <XAxis dataKey="day" stroke="#8E8E93" />
+                  <YAxis stroke="#8E8E93" />
                   <Tooltip
                     formatter={(value: number) => [formatCurrency(value), "Faturamento"]}
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      backgroundColor: "#1C1C1E",
+                      border: "1px solid #38383A",
+                      borderRadius: "12px",
+                      color: "#FFFFFF",
                     }}
                   />
                   <Area
                     type="monotone"
                     dataKey="valor"
-                    stroke="hsl(var(--primary))"
+                    stroke="#007AFF"
+                    strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorRevenue)"
                   />
@@ -187,35 +227,36 @@ const Dashboard = () => {
           </Card>
 
           {/* Gráfico de Modelos Mais Vendidos */}
-          <Card className="bg-gradient-card shadow-card border-border/50">
-            <CardHeader>
-              <CardTitle>Modelos Mais Vendidos</CardTitle>
-            </CardHeader>
+          <Card sx={{ height: 400 }}>
             <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Modelos Mais Vendidos
+              </Typography>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={modelData} layout="horizontal">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis dataKey="model" type="category" width={100} stroke="hsl(var(--muted-foreground))" />
+                <BarChart data={modelData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#38383A" />
+                  <XAxis dataKey="model" stroke="#8E8E93" />
+                  <YAxis stroke="#8E8E93" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      backgroundColor: "#1C1C1E",
+                      border: "1px solid #38383A",
+                      borderRadius: "12px",
+                      color: "#FFFFFF",
                     }}
                   />
-                  <Bar dataKey="vendas" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="vendas" fill="#007AFF" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* Gráfico Pizza - Distribuição por Modelo */}
-          <Card className="bg-gradient-card shadow-card border-border/50">
-            <CardHeader>
-              <CardTitle>Distribuição de Vendas</CardTitle>
-            </CardHeader>
+          <Card sx={{ height: 400 }}>
             <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Distribuição de Vendas
+              </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -233,9 +274,10 @@ const Dashboard = () => {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      backgroundColor: "#1C1C1E",
+                      border: "1px solid #38383A",
+                      borderRadius: "12px",
+                      color: "#FFFFFF",
                     }}
                   />
                   <Legend />
@@ -243,9 +285,9 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

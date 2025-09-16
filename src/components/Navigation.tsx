@@ -1,45 +1,72 @@
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { BarChart3, ShoppingBag, Smartphone } from "lucide-react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  Container,
+} from '@mui/material';
+import {
+  BarChart,
+  ShoppingBag,
+  Smartphone,
+} from '@mui/icons-material';
 
 const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
     { path: "/", label: "Catálogo", icon: Smartphone },
-    { path: "/dashboard", label: "Dashboard", icon: BarChart3 },
+    { path: "/dashboard", label: "Dashboard", icon: BarChart },
   ];
 
   return (
-    <nav className="bg-gradient-card border-b border-border shadow-card">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <ShoppingBag className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+    <AppBar position="sticky" elevation={0}>
+      <Container maxWidth="xl">
+        <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+          <Box component={Link} to="/" sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            textDecoration: 'none',
+            color: 'inherit'
+          }}>
+            <ShoppingBag sx={{ mr: 1, fontSize: 28 }} />
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 700,
+                background: 'linear-gradient(45deg, #007AFF, #5AC8FA)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
               iStore Pro
-            </span>
-          </Link>
+            </Typography>
+          </Box>
 
-          <div className="flex items-center space-x-1">
+          <Box sx={{ display: 'flex', gap: 1 }}>
             {navItems.map(({ path, label, icon: Icon }) => (
               <Button
                 key={path}
-                variant={location.pathname === path ? "default" : "ghost"}
-                asChild
-                className="transition-smooth"
+                component={Link}
+                to={path}
+                variant={location.pathname === path ? "contained" : "outlined"}
+                startIcon={<Icon />}
+                sx={{
+                  minWidth: 'auto',
+                  px: 3,
+                  py: 1,
+                }}
               >
-                <Link to={path} className="flex items-center space-x-2">
-                  <Icon className="h-4 w-4" />
-                  <span>{label}</span>
-                </Link>
+                {label}
               </Button>
             ))}
-          </div>
-        </div>
-      </div>
-    </nav>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 };
 
