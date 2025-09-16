@@ -9,10 +9,11 @@ import {
   Fade,
 } from '@mui/material';
 import { Search, FilterList } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navigation from "@/components/Navigation";
 import ProductCard from "@/components/ProductCard";
 import heroImage from "@/assets/hero-iphones.jpg";
+import api from '@/lib/api';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,12 +61,28 @@ const Index = () => {
       image: "/placeholder.svg",
     },
   ];
+  const [iphonesData, setIphonesData] = useState([]);
+
+  async function getAllIphones() {
+    try {
+      const iphonesResponse = await api.get('/iphones');
+      console.log(iphonesResponse.data);
+      setIphonesData(iphonesResponse.data);
+    } catch (error) {
+      console.error('Erro ao buscar iPhones:', error);
+      setIphonesData(iphones);
+    }
+  }
+
+  useEffect(() => {
+    getAllIphones();
+  }, []);
 
   const handleAddToCart = (productName: string) => {
     console.log(`${productName} foi adicionado ao carrinho.`);
   };
 
-  const filteredIphones = iphones.filter(iphone =>
+  const filteredIphones = iphonesData.filter(iphone =>
     iphone.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     iphone.model.toLowerCase().includes(searchTerm.toLowerCase())
   );
