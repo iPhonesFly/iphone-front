@@ -11,6 +11,7 @@ import {
   BarChart,
   ShoppingBag,
   Smartphone,
+  Settings,
 } from '@mui/icons-material';
 
 const Navigation = () => {
@@ -19,6 +20,7 @@ const Navigation = () => {
   const navItems = [
     { path: "/", label: "Catálogo", icon: Smartphone },
     { path: "/dashboard", label: "Dashboard", icon: BarChart },
+    { path: "/admin", label: "Admin", icon: Settings },
   ];
 
   return (
