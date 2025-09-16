@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        iphone: {
+          blue: "hsl(var(--iphone-blue))",
+          purple: "hsl(var(--iphone-purple))",
+          pink: "hsl(var(--iphone-pink))",
+          green: "hsl(var(--iphone-green))",
+          yellow: "hsl(var(--iphone-yellow))",
+          red: "hsl(var(--iphone-red))",
+          black: "hsl(var(--iphone-black))",
+          white: "hsl(var(--iphone-white))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -57,6 +67,20 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-secondary': 'var(--gradient-secondary)',
+        'gradient-card': 'var(--gradient-card)',
+      },
+      boxShadow: {
+        'elegant': 'var(--shadow-elegant)',
+        'card': 'var(--shadow-card)',
+        'glow': 'var(--shadow-glow)',
+      },
+      transitionTimingFunction: {
+        'smooth': 'var(--transition-smooth)',
+        'bounce': 'var(--transition-bounce)',
       },
       borderRadius: {
         lg: "var(--radius)",
