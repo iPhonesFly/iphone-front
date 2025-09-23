@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -37,6 +37,16 @@ export const FloatingChat = () => {
   const [currentMessage, setCurrentMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
   const [onlineCount, setOnlineCount] = useState(0);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll para as mensagens mais recentes
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Simular usuários online e mensagens
   useEffect(() => {
@@ -228,39 +238,40 @@ export const FloatingChat = () => {
               // Interface de chat ativa
               <>
                 {/* Área de mensagens */}
-                <ScrollArea className="flex-1 p-4">
-                  <div className="space-y-3">
-                    {messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${
-                          message.sender === userName ? 'justify-end' : 'justify-start'
-                        }`}
-                      >
-                        <div
-                          className={`max-w-[80%] rounded-lg p-3 text-sm ${
-                            message.isCurrentUser || message.sender === userName
-                              ? 'bg-primary text-primary-foreground'
-                              : message.sender === 'Sistema'
-                              ? 'bg-secondary text-secondary-foreground text-center italic'
-                              : 'bg-muted text-muted-foreground'
-                          }`}
-                        >
-                          {message.sender !== 'Sistema' && message.sender !== userName && (
-                            <p className="text-xs font-medium mb-1 opacity-70">{message.sender}</p>
-                          )}
-                          <p>{message.text}</p>
-                          <span className="text-xs opacity-70 mt-1 block">
-                            {message.timestamp.toLocaleTimeString('pt-BR', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
+                 <ScrollArea className="flex-1 p-4">
+                   <div className="space-y-3">
+                     {messages.map((message) => (
+                       <div
+                         key={message.id}
+                         className={`flex ${
+                           message.sender === userName ? 'justify-end' : 'justify-start'
+                         }`}
+                       >
+                         <div
+                           className={`max-w-[80%] rounded-lg p-3 text-sm ${
+                             message.isCurrentUser || message.sender === userName
+                               ? 'bg-primary text-primary-foreground'
+                               : message.sender === 'Sistema'
+                               ? 'bg-secondary text-secondary-foreground text-center italic'
+                               : 'bg-muted text-muted-foreground'
+                           }`}
+                         >
+                           {message.sender !== 'Sistema' && message.sender !== userName && (
+                             <p className="text-xs font-medium mb-1 opacity-70">{message.sender}</p>
+                           )}
+                           <p>{message.text}</p>
+                           <span className="text-xs opacity-70 mt-1 block">
+                             {message.timestamp.toLocaleTimeString('pt-BR', {
+                               hour: '2-digit',
+                               minute: '2-digit',
+                             })}
+                           </span>
+                         </div>
+                       </div>
+                     ))}
+                     <div ref={messagesEndRef} />
+                   </div>
+                 </ScrollArea>
 
                 {/* Campo de entrada */}
                 <div className="p-4 border-t bg-muted/30">
