@@ -14,72 +14,168 @@ import Navigation from "@/components/Navigation";
 import ProductCard from "@/components/ProductCard";
 import heroImage from "@/assets/hero-iphones.jpg";
 import api from '@/lib/api';
+import { Socket } from "socket.io-client";
+import { getSocket } from '@/lib/socket';
+
+// Interface para os dados do iPhone
+interface IphoneData {
+  id: number;
+  name: string;
+  model: string;
+  price: number;
+  originalPrice?: number;
+  color: "blue" | "purple" | "pink" | "green" | "white" | "black" | "red" | "yellow";
+  storage: string;
+  rating: number;
+  image: string;
+}
+
+// Dados mock como fallback
+const mockIphones = [
+  {
+    id: 1,
+    name: "iPhone 15 Pro Max",
+    model: "Titanium Natural", 
+    price: 10499,
+    originalPrice: 11299,
+    color: "blue" as const,
+    storage: "256GB",
+    rating: 4.9,
+    image: "/placeholder.svg",
+  },
+  {
+    id: 2,
+    name: "iPhone 15 Pro",
+    model: "Titanium Blue",
+    price: 9499,
+    color: "purple" as const,
+    storage: "128GB",
+    rating: 4.8,
+    image: "/placeholder.svg",
+  },
+  {
+    id: 3,
+    name: "iPhone 15",
+    model: "Pink",
+    price: 7299,
+    color: "pink" as const,
+    storage: "128GB",
+    rating: 4.7,
+    image: "/placeholder.svg",
+  },
+  {
+    id: 4,
+    name: "iPhone 15 Plus",
+    model: "Green",
+    price: 8299,
+    color: "green" as const,
+    storage: "256GB",
+    rating: 4.8,
+    image: "/placeholder.svg",
+  },
+];
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [iphonesData, setIphonesData] = useState<IphoneData[]>(mockIphones);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
-  const iphones = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro Max",
-      model: "Titanium Natural", 
-      price: 10499,
-      originalPrice: 11299,
-      color: "blue" as const,
-      storage: "256GB",
-      rating: 4.9,
-      image: "/placeholder.svg",
-    },
-    {
-      id: 2,
-      name: "iPhone 15 Pro",
-      model: "Titanium Blue",
-      price: 9499,
-      color: "purple" as const,
-      storage: "128GB",
-      rating: 4.8,
-      image: "/placeholder.svg",
-    },
-    {
-      id: 3,
-      name: "iPhone 15",
-      model: "Pink",
-      price: 7299,
-      color: "pink" as const,
-      storage: "128GB",
-      rating: 4.7,
-      image: "/placeholder.svg",
-    },
-    {
-      id: 4,
-      name: "iPhone 15 Plus",
-      model: "Green",
-      price: 8299,
-      color: "green" as const,
-      storage: "256GB",
-      rating: 4.8,
-      image: "/placeholder.svg",
-    },
-  ];
-  const [iphonesData, setIphonesData] = useState([]);
-
-  async function getAllIphones() {
-    try {
-      const iphonesResponse = await api.get('/iphones');
-      console.log(iphonesResponse.data);
-      setIphonesData(iphonesResponse.data);
-    } catch (error) {
-      console.error('Erro ao buscar iPhones:', error);
-      setIphonesData(iphones);
-    }
-  }
-
+  // Conexão e busca dos iPhones via Socket.IO
   useEffect(() => {
-    getAllIphones();
+    const socketConnection = getSocket();
+    setSocket(socketConnection);
+
+    // Event listeners
+    socketConnection.on('connect', () => {
+      console.info('Conectado ao servidor WebSocket');
+      setIsConnected(true);
+      
+      // Buscar todos os iPhones quando conectar
+      socketConnection.emit('get-all-iphones');
+    });
+
+    socketConnection.on('disconnect', () => {
+      console.log('Desconectado do servidor WebSocket');
+      setIsConnected(false);
+    });
+
+    // Receber lista de iPhones
+    socketConnection.on('all-iphones', (data: IphoneData[]) => {
+      console.log('Recebido all-iphones:', data);
+      if (data && data.length > 0) {
+        // Mapear dados da API para o formato esperado pelo componente
+        const formattedData: IphoneData[] = data.map(iphone => ({
+          ...iphone,
+          color: (iphone.color || "blue") as IphoneData['color'],
+          image: iphone.image || "/placeholder.svg",
+          rating: iphone.rating || 4.5,
+          storage: iphone.storage || "128GB",
+          originalPrice: iphone.originalPrice || undefined
+        }));
+
+        console.info("formattedData: ", formattedData);
+        setIphonesData(formattedData);
+      } else {
+        console.log('Usando dados mock como fallback');
+        setIphonesData(mockIphones);
+      }
+    });
+
+    // Receber notificação de novo iPhone criado
+    socketConnection.on('iphone-created', (newIphone: IphoneData) => {
+      console.log('Novo iPhone criado:', newIphone);
+      // Recarregar todos os dados para garantir sincronização
+      socketConnection.emit('get-all-iphones');
+    });
+
+    // Receber notificação de iPhone atualizado
+    socketConnection.on('iphone-updated', (updatedIphone: IphoneData) => {
+      console.log('iPhone atualizado:', updatedIphone);
+      // Recarregar todos os dados para garantir sincronização
+      socketConnection.emit('get-all-iphones');
+    });
+
+    // Receber notificação de iPhone deletado
+    socketConnection.on('iphone-deleted', (deletedId: number) => {
+      console.log('iPhone deletado:', deletedId);
+      // Recarregar todos os dados para garantir sincronização
+      socketConnection.emit('get-all-iphones');
+    });
+
+    // Tratamento de erros
+    socketConnection.on('error', (error: string) => {
+      console.error('Erro do Socket.IO:', error);
+      setIphonesData(mockIphones);
+    });
+
+    // Verificar se já está conectado
+    if (socketConnection.connected) {
+      setIsConnected(true);
+      socketConnection.emit('get-all-iphones');
+    }
+
+    // Cleanup na desmontagem (apenas remove listeners, não desconecta)
+    return () => {
+      socketConnection.off('connect');
+      socketConnection.off('disconnect');
+      socketConnection.off('all-iphones');
+      socketConnection.off('iphone-created');
+      socketConnection.off('iphone-updated');
+      socketConnection.off('iphone-deleted');
+      socketConnection.off('error');
+    };
   }, []);
 
   const handleAddToCart = (productName: string) => {
     console.log(`${productName} foi adicionado ao carrinho.`);
+  };
+
+  // Função para recarregar dados
+  const handleRefreshData = () => {
+    if (socket && isConnected) {
+      socket.emit('get-all-iphones');
+    }
   };
 
   const filteredIphones = iphonesData.filter(iphone =>
@@ -169,6 +265,25 @@ const Index = () => {
       </Box>
 
       <Container maxWidth="xl" sx={{ py: 6 }}>
+        {/* Status de Conexão */}
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Chip
+            label={isConnected ? "Conectado ao servidor" : "Desconectado"}
+            color={isConnected ? "success" : "error"}
+            size="small"
+            sx={{ fontWeight: 600 }}
+          />
+          <Button
+            variant="text"
+            size="small"
+            onClick={handleRefreshData}
+            disabled={!isConnected}
+            sx={{ fontWeight: 600 }}
+          >
+            Atualizar Dados
+          </Button>
+        </Box>
+
         {/* Filtros e Busca */}
         <Box sx={{ mb: 6, display: 'flex', gap: 2, alignItems: 'center' }}>
           <TextField
