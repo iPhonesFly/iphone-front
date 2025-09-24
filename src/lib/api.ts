@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Instância do Axios configurada para API local
 const api = axios.create({
-  baseURL: 'http://localhost:3000/', // Ajuste a porta conforme sua API
+  baseURL: 'https://iphone-api-os6b.vercel.app/', // Ajuste a porta conforme sua API
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
